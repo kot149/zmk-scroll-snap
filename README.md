@@ -7,9 +7,9 @@ A ZMK module that provides a scroll snap feature: align the 360-degree xy scroll
 >
 > Its behavior is not stable. Its behavior and API may change without notice.
 
-## Installation
+## Usage
 
-Add the Module to your `west.yml`.
+### 1. Add the Module to your `west.yml`.
 
 ```yml
 manifest:
@@ -30,15 +30,13 @@ manifest:
     path: config
 ```
 
-## Usage
-
-### 1. Include `scroll-snap.dtsi`
+### 2. Include `scroll-snap.dtsi`
 
 ```c
 #include <scroll-snap.dtsi>
 ```
 
-### 2. Apply the input processor to your pointing device listener
+### 3. Apply the input processor to your pointing device listener
 
 ```dts
 #include <scroll-snap.dtsi>
