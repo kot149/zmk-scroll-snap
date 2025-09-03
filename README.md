@@ -40,12 +40,19 @@ manifest:
 
 ```dts
 #include <scroll-snap.dtsi>
+#include <input/processors.dtsi>
 
 &trackball_listener {
     compatible = "zmk,input-listener";
     device = <&trackball>;
 
-    input-processors = <&zip_scroll_snap>;
+    scroller {
+      layers = <5>;
+      input-processors = <
+          &zip_xy_to_scroll_mapper
+          &zip_scroll_snap
+      >;
+    };
 };
 ```
 
