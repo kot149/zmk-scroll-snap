@@ -1,0 +1,16 @@
+# Copyright (c) 2024 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+config ZMK_SCROLL_SNAP
+	bool "Enable scroll snap support"
+	default y
+	depends on ZMK_POINTING
+	help
+	  Enable scroll snap support for ZMK.
+
+config ZMK_SCROLL_SNAP_MAX_BUF_SIZE
+	int "Max buffer size for samples used to determine scroll direction"
+	default 16
+	range 1 64
+	help
+	  Max buffer size for samples used to determine scroll direction.

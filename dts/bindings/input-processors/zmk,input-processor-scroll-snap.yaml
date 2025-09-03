@@ -1,0 +1,60 @@
+# Copyright (c) 2024 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+description: Scroll Snap Input Processor
+
+compatible: "zmk,input-processor-scroll-snap"
+
+properties:
+  "#input-processor-cells":
+    type: int
+    const: 0
+    description: "Number of cells in input processor specifier"
+
+  x-threshold:
+    type: array
+    description: "X axis threshold as [numerator, denominator]. Snap to x axis if |y/x| < num/den."
+
+  y-threshold:
+    type: array
+    description: "Y axis threshold as [numerator, denominator]. Snap to y axis if |y/x| > num/den."
+
+  xy-threshold:
+    type: array
+    description: "!! not implemented: Diagonal threshold as [numerator, denominator]. Snap to diagonal if num/den < |y/x| < den/num. Shold meet num < den."
+
+  require-n-samples:
+    type: int
+    description: "Number of samples to collect before snapping decision"
+
+  immediate-snap-threshold:
+    type: int
+    description: "If sum of sample value exceeds this value, start snapping regardless of the number of collected samples"
+
+  lock-duration-ms:
+    type: int
+    description: "After deciding a snap direction, keep that direction for this duration. Disabled if 0."
+
+  lock-for-next-n-events:
+    type: int
+    description: "After deciding a snap direction, keep that direction for this many subsequent events. Disabled if 0."
+
+  idle-reset-timeout-ms:
+    type: int
+    description: "If idle for this long, collected samples are reset. Disabled if 0."
+
+  event-type:
+    type: int
+    description: "Input event type to process (default: INPUT_EV_REL)"
+
+  event-code-x:
+    type: int
+    description: "Input event code for X-axis (horizontal) movement (default: INPUT_REL_HWHEEL)"
+
+  event-code-y:
+    type: int
+    description: "Input event code for Y-axis (vertical) movement (default: INPUT_REL_WHEEL)"
+
+  track-remainders:
+    type: boolean
+    description: "!! Not implemented: Whether to track remainders"

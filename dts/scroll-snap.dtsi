@@ -1,0 +1,83 @@
+/*
+ * Copyright (c) 2024 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <zephyr/dt-bindings/input/input-event-codes.h>
+
+/ {
+    /omit-if-no-ref/ zip_scroll_snap: zip_scroll_snap {
+        compatible = "zmk,input-processor-scroll-snap";
+        #input-processor-cells = <0>;
+
+        x-threshold = <5 8>;
+        y-threshold = <1 1>;
+        xy-threshold = <0 0>;
+
+        require-n-samples = <10>;
+        immediate-snap-threshold = <1500>;
+        lock-duration-ms = <200>;
+        lock-for-next-n-events = <10>;
+        idle-reset-timeout-ms = <200>;
+
+        track-remainders;
+    };
+
+    //! This implementation is incomplete !!
+    /omit-if-no-ref/ zip_scroll_snap_8way: zip_scroll_snap_8way {
+        compatible = "zmk,input-processor-scroll-snap";
+        #input-processor-cells = <0>;
+
+        x-threshold = <5 8>;
+        y-threshold = <8 5>;
+        xy-threshold = <5 8>;
+
+        require-n-samples = <10>;
+        immediate-snap-threshold = <1500>;
+        lock-duration-ms = <200>;
+        lock-for-next-n-events = <10>;
+        idle-reset-timeout-ms = <200>;
+
+        track-remainders;
+    };
+
+    /omit-if-no-ref/ zip_cursor_snap: zip_cursor_snap {
+        compatible = "zmk,input-processor-scroll-snap";
+        #input-processor-cells = <0>;
+
+        x-threshold = <1 1>;
+        y-threshold = <1 1>;
+        xy-threshold = <0 0>;
+
+        require-n-samples = <10>;
+        immediate-snap-threshold = <1500>;
+        lock-duration-ms = <200>;
+        lock-for-next-n-events = <10>;
+        idle-reset-timeout-ms = <200>;
+
+        event-code-x = <INPUT_REL_X>;
+        event-code-y = <INPUT_REL_Y>;
+        track-remainders;
+    };
+
+    //! This implementation is incomplete !!
+    /omit-if-no-ref/ zip_cursor_snap_8way: zip_cursor_snap_8way {
+        compatible = "zmk,input-processor-scroll-snap";
+        #input-processor-cells = <0>;
+
+        x-threshold = <5 8>;
+        y-threshold = <8 5>;
+        xy-threshold = <5 8>;
+
+        require-n-samples = <10>;
+        immediate-snap-threshold = <1500>;
+        lock-duration-ms = <200>;
+        lock-for-next-n-events = <10>;
+        idle-reset-timeout-ms = <200>;
+
+        event-code-x = <INPUT_REL_X>;
+        event-code-y = <INPUT_REL_Y>;
+        track-remainders;
+    };
+};
