@@ -13,6 +13,7 @@
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/util_macro.h>
 #include <drivers/input_processor.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <limits.h>
 #include <string.h>
@@ -20,8 +21,6 @@
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
 #if DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
-
-#define ABS(x) ((x) < 0 ? -(x) : (x))
 
 struct scroll_snap_sample {
     int32_t dx;
@@ -125,13 +124,13 @@ static int input_processor_scroll_snap_handle_event(const struct device *dev,
     // When buffer is full, delete the oldest sample
     if (data->sample_count >= config->require_n_samples) {
         struct scroll_snap_sample old = data->samples[data->head];
-        data->sample_sum.dx -= ABS(old.dx);
-        data->sample_sum.dy -= ABS(old.dy);
+        data->sample_sum.dx -= abs(old.dx);
+        data->sample_sum.dy -= abs(old.dy);
     }
 
     data->samples[data->head] = incoming;
-    data->sample_sum.dx += ABS(incoming.dx);
-    data->sample_sum.dy += ABS(incoming.dy);
+    data->sample_sum.dx += abs(incoming.dx);
+    data->sample_sum.dy += abs(incoming.dy);
     data->remainder.dx += incoming.dx;
     data->remainder.dy += incoming.dy;
     data->sample_count++;
