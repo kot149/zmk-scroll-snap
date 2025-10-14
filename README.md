@@ -47,11 +47,11 @@ manifest:
     device = <&trackball>;
 
     scroller {
-      layers = <5>;
-      input-processors = <
-          &zip_xy_to_scroll_mapper
-          &zip_scroll_snap
-      >;
+        layers = <5>;
+        input-processors = <
+            &zip_xy_to_scroll_mapper
+            &zip_scroll_snap
+        >;
     };
 };
 ```
