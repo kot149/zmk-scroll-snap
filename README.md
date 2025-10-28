@@ -2,11 +2,6 @@
 
 A ZMK module that provides a scroll snap feature: align the 360-degree xy scroll direction to the nearest axis.
 
-> [!warning]
-> 🚧 This module is still under development. 🚧
->
-> Its behavior is not stable. Its behavior and API may change without notice.
-
 ## Usage
 
 ### 1. Add the Module to your `west.yml`.
