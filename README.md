@@ -51,7 +51,7 @@ manifest:
 };
 ```
 
-## Configuration
+## Configuration (Optional)
 
 In the following example, the scroll snap will
 - snap to x axis if $\displaystyle \left|\frac{y}{x}\right| < \frac{5}{8}$.
