@@ -149,7 +149,11 @@ static int input_processor_scroll_snap_handle_event(const struct device *dev,
     data->sample_sum.dy += abs(incoming.dy);
     data->remainder.dx += incoming.dx;
     data->remainder.dy += incoming.dy;
-    data->head = (data->head + 1) % config->require_n_samples;
+
+    data->head++;
+    if (data->head >= config->require_n_samples) {
+        data->head = 0;
+    }
 
     uint16_t abs_x = (uint16_t)(data->sample_sum.dx);
     uint16_t abs_y = (uint16_t)(data->sample_sum.dy);
