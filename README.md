@@ -83,3 +83,5 @@ In the following example, the scroll snap will
 ```
 
 See [dts/scroll-snap.dtsi](dts/scroll-snap.dtsi) for default values.
+
+The sample buffer is allocated per input processor instance according to `require-n-samples`. The value is capped by `CONFIG_ZMK_SCROLL_SNAP_MAX_BUF_SIZE`, which defaults to 16.
