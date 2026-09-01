@@ -13,9 +13,6 @@
 #include <zephyr/sys/util.h>
 #include <zephyr/sys/util_macro.h>
 #include <drivers/input_processor.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <limits.h>
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
@@ -24,6 +21,11 @@ LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 struct scroll_snap_sample {
     int32_t dx;
     int32_t dy;
+};
+
+struct scroll_snap_magnitude {
+    uint32_t dx;
+    uint32_t dy;
 };
 
 #define DIRECTION_NONE 0
@@ -35,7 +37,7 @@ struct scroll_snap_sample {
 struct input_processor_scroll_snap_data {
     uint16_t head;
     uint16_t sample_count;
-    struct scroll_snap_sample sample_sum;
+    struct scroll_snap_magnitude sample_sum;
 
     struct scroll_snap_sample remainder;
 
@@ -68,6 +70,10 @@ struct input_processor_scroll_snap_config {
 };
 
 static int input_processor_scroll_snap_init(const struct device *dev);
+
+static uint32_t scroll_snap_magnitude(int32_t value) {
+    return value < 0 ? 0U - (uint32_t)value : (uint32_t)value;
+}
 
 static void input_processor_scroll_snap_reset(struct input_processor_scroll_snap_data *data,
                                               int64_t now_ms) {
@@ -138,15 +144,15 @@ static int input_processor_scroll_snap_handle_event(const struct device *dev,
     // When buffer is full, delete the oldest sample
     if (data->sample_count >= config->require_n_samples) {
         struct scroll_snap_sample old = config->samples[data->head];
-        data->sample_sum.dx -= abs(old.dx);
-        data->sample_sum.dy -= abs(old.dy);
+        data->sample_sum.dx -= scroll_snap_magnitude(old.dx);
+        data->sample_sum.dy -= scroll_snap_magnitude(old.dy);
     } else {
         data->sample_count++;
     }
 
     config->samples[data->head] = incoming;
-    data->sample_sum.dx += abs(incoming.dx);
-    data->sample_sum.dy += abs(incoming.dy);
+    data->sample_sum.dx += scroll_snap_magnitude(incoming.dx);
+    data->sample_sum.dy += scroll_snap_magnitude(incoming.dy);
     data->remainder.dx += incoming.dx;
     data->remainder.dy += incoming.dy;
 
