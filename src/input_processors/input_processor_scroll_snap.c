@@ -16,7 +16,6 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <limits.h>
-#include <string.h>
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
 
@@ -35,7 +34,6 @@ struct scroll_snap_sample {
 
 struct input_processor_scroll_snap_data {
     uint16_t head;
-    struct scroll_snap_sample samples[CONFIG_ZMK_SCROLL_SNAP_MAX_BUF_SIZE];
     uint16_t sample_count;
     struct scroll_snap_sample sample_sum;
 
@@ -48,6 +46,8 @@ struct input_processor_scroll_snap_data {
 };
 
 struct input_processor_scroll_snap_config {
+    struct scroll_snap_sample *samples;
+
     uint32_t x_thresh_num;
     uint32_t x_thresh_den;
     uint32_t y_thresh_num;
@@ -137,12 +137,12 @@ static int input_processor_scroll_snap_handle_event(const struct device *dev,
 
     // When buffer is full, delete the oldest sample
     if (data->sample_count >= config->require_n_samples) {
-        struct scroll_snap_sample old = data->samples[data->head];
+        struct scroll_snap_sample old = config->samples[data->head];
         data->sample_sum.dx -= abs(old.dx);
         data->sample_sum.dy -= abs(old.dy);
     }
 
-    data->samples[data->head] = incoming;
+    config->samples[data->head] = incoming;
     data->sample_sum.dx += abs(incoming.dx);
     data->sample_sum.dy += abs(incoming.dy);
     data->remainder.dx += incoming.dx;
@@ -267,13 +267,7 @@ static int input_processor_scroll_snap_handle_event(const struct device *dev,
 }
 
 static int input_processor_scroll_snap_init(const struct device *dev) {
-    struct input_processor_scroll_snap_data *data = dev->data;
-    const struct input_processor_scroll_snap_config *config = dev->config;
-
-    input_processor_scroll_snap_reset(data, k_uptime_get());
-
-    memset(data->samples, 0, sizeof(struct scroll_snap_sample) * config->require_n_samples);
-
+    input_processor_scroll_snap_reset(dev->data, k_uptime_get());
     return 0;
 }
 
@@ -281,9 +275,15 @@ static const struct zmk_input_processor_driver_api input_processor_scroll_snap_d
     .handle_event = input_processor_scroll_snap_handle_event,
 };
 
+#define SCROLL_SNAP_REQUIRE_N_SAMPLES(n)                                                                \
+    CLAMP(DT_INST_PROP_OR(n, require_n_samples, 0), 1, CONFIG_ZMK_SCROLL_SNAP_MAX_BUF_SIZE)
+
 #define SCROLL_SNAP_INPUT_PROCESSOR_INST(n)                                                             \
+    static struct scroll_snap_sample input_processor_scroll_snap_samples_##n[                           \
+        SCROLL_SNAP_REQUIRE_N_SAMPLES(n)];                                                               \
     static struct input_processor_scroll_snap_data input_processor_scroll_snap_data_##n = {};           \
     static const struct input_processor_scroll_snap_config input_processor_scroll_snap_config_##n = {   \
+        .samples = input_processor_scroll_snap_samples_##n,                                             \
         .x_thresh_num = DT_INST_PROP_BY_IDX(n, x_threshold, 0),                                         \
         .x_thresh_den = DT_INST_PROP_BY_IDX(n, x_threshold, 1),                                         \
         .y_thresh_num = DT_INST_PROP_BY_IDX(n, y_threshold, 0),                                         \
@@ -291,7 +291,7 @@ static const struct zmk_input_processor_driver_api input_processor_scroll_snap_d
         .xy_thresh_num = DT_INST_PROP_BY_IDX(n, xy_threshold, 0),                                       \
         .xy_thresh_den = DT_INST_PROP_BY_IDX(n, xy_threshold, 1),                                       \
         .immediate_snap_threshold = DT_INST_PROP(n, immediate_snap_threshold),                          \
-        .require_n_samples = CLAMP(DT_INST_PROP_OR(n, require_n_samples, 0), 1, CONFIG_ZMK_SCROLL_SNAP_MAX_BUF_SIZE), \
+        .require_n_samples = SCROLL_SNAP_REQUIRE_N_SAMPLES(n),                                          \
         .idle_reset_timeout_ms = DT_INST_PROP_OR(n, idle_reset_timeout_ms, 0),                          \
         .lock_duration_ms = DT_INST_PROP_OR(n, lock_duration_ms, 0),                                    \
         .lock_for_next_n_events = DT_INST_PROP_OR(n, lock_for_next_n_events, 0),                        \
