@@ -161,8 +161,8 @@ static int input_processor_scroll_snap_handle_event(const struct device *dev,
         data->head = 0;
     }
 
-    uint16_t abs_x = (uint16_t)(data->sample_sum.dx);
-    uint16_t abs_y = (uint16_t)(data->sample_sum.dy);
+    uint32_t abs_x = data->sample_sum.dx;
+    uint32_t abs_y = data->sample_sum.dy;
 
     // Check if we have enough samples
     if (!(data->sample_count >= config->require_n_samples || abs_x > config->immediate_snap_threshold || abs_y > config->immediate_snap_threshold)) {
