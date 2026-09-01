@@ -69,6 +69,20 @@ struct input_processor_scroll_snap_config {
 
 static int input_processor_scroll_snap_init(const struct device *dev);
 
+static void input_processor_scroll_snap_reset(struct input_processor_scroll_snap_data *data,
+                                              int64_t now_ms) {
+    data->sample_count = 0;
+    data->sample_sum.dx = 0;
+    data->sample_sum.dy = 0;
+    data->remainder.dx = 0;
+    data->remainder.dy = 0;
+    data->head = 0;
+    data->last_event_ts_ms = now_ms;
+    data->lock_events_remaining = 0;
+    data->lock_direction = DIRECTION_NONE;
+    data->lock_expires_at_ms = 0;
+}
+
 static int input_processor_scroll_snap_handle_event(const struct device *dev,
                                                       struct input_event *event,
                                                       uint32_t param1, uint32_t param2,
@@ -98,7 +112,7 @@ static int input_processor_scroll_snap_handle_event(const struct device *dev,
     if (config->idle_reset_timeout_ms > 0) {
         int64_t elapsed = now_ms - data->last_event_ts_ms;
         if (elapsed >= config->idle_reset_timeout_ms) {
-            input_processor_scroll_snap_init(dev);
+            input_processor_scroll_snap_reset(data, now_ms);
         }
     }
 
@@ -256,16 +270,7 @@ static int input_processor_scroll_snap_init(const struct device *dev) {
     struct input_processor_scroll_snap_data *data = dev->data;
     const struct input_processor_scroll_snap_config *config = dev->config;
 
-    data->sample_count = 0;
-    data->sample_sum.dx = 0;
-    data->sample_sum.dy = 0;
-    data->remainder.dx = 0;
-    data->remainder.dy = 0;
-    data->head = 0;
-    data->last_event_ts_ms = k_uptime_get();
-    data->lock_events_remaining = 0;
-    data->lock_direction = DIRECTION_NONE;
-    data->lock_expires_at_ms = 0;
+    input_processor_scroll_snap_reset(data, k_uptime_get());
 
     memset(data->samples, 0, sizeof(struct scroll_snap_sample) * config->require_n_samples);
 
