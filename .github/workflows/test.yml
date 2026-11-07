@@ -1,0 +1,32 @@
+name: Tests
+
+on:
+  push:
+    paths:
+      - ".github/workflows/**"
+      - "src/**"
+      - "dts/**"
+      - "tests/**"
+      - "CMakeLists.txt"
+      - "Kconfig"
+      - "zephyr/module.yml"
+  pull_request:
+    paths:
+      - ".github/workflows/**"
+      - "src/**"
+      - "dts/**"
+      - "tests/**"
+      - "CMakeLists.txt"
+      - "Kconfig"
+      - "zephyr/module.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    uses: ./.github/workflows/run-tests.yml
+    with:
+      zmk-03-ref: acfd8e5ea76cf23ad1c9b6b99848f97a95224257
+      zmk-main-ref: 4dd95d7840eb3d5a3f59bb29fbf1ab054715ef85
